@@ -14,6 +14,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using TransactionExchange.Api.Data;
+using TransactionExchange.Api.Enums;
+using TransactionExchange.Api.Services;
+using TransactionExchange.Api.Services.Interfaces;
 
 namespace TransactionExchange.Api
 {
@@ -31,9 +34,18 @@ namespace TransactionExchange.Api
         {
             services.AddDbContext<ApplicationDataContext>(options =>
             {
-                options.UseSqlServer(Configuration["TransactionExchangeDb"].ToString());
+                options.UseSqlServer(Configuration["DatabaseConnections:TransactionExchangeDb"].ToString());
             });
 
+            services.AddHttpClient(ExternalRestServices.RateService.ToString(), c =>
+            {
+                c.BaseAddress = new Uri(Configuration["ExternalRestServices:RateService:BaseUrl"]);
+                c.Timeout = TimeSpan.FromSeconds(Convert.ToDouble(Configuration["ExternalRestServices:RateService:Timeout"]));
+                c.DefaultRequestHeaders.Add(Configuration["ExternalRestServices:RateService:Authorization:Key"],
+                    Configuration["ExternalRestServices:RateService:Authorization:Value"]);
+            });
+
+            services.AddSingleton<IRateService, RateService>();
 
             services.AddControllers();
             services.AddSwaggerGen(c =>

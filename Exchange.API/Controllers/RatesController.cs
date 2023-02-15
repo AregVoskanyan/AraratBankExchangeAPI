@@ -1,17 +1,11 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using Exchange.API.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Filters;
-using System;
-using System.Net;
 using System.Threading.Tasks;
-using TransactionExchange.Api.Helpers;
-using TransactionExchange.Api.Services.Interfaces;
 
-namespace TransactionExchange.Api.Controllers
+namespace Exchange.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize(Roles = UserRoles.Admin)]
     public class RatesController : ControllerBase
     {
         private readonly IRateService _rateService;
@@ -25,7 +19,7 @@ namespace TransactionExchange.Api.Controllers
         public async Task<IActionResult> Get()
         {
             var rates = await _rateService.GetAsync();
-            if (rates == null)
+            if(rates == null)
             {
                 return StatusCode(503, "Rates are not available");
             }

@@ -86,6 +86,7 @@ namespace TransactionExchange.Api
             });
 
             services.AddSingleton<IRateService, RateService>();
+            services.AddTransient<ITransactionService, TransactionService>();
 
             services.AddControllers();
 
@@ -147,7 +148,7 @@ namespace TransactionExchange.Api
                 endpoints.MapControllers();
             });
 
-            AppDbInitializer.SeedRolesToDb(app).Wait();
+            AppDbInitializer.SeedRolesToDb(app).Wait(); 
         }
     }
 }

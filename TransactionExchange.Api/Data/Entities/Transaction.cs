@@ -13,6 +13,6 @@ namespace TransactionExchange.Api.Data.Entities
         public double ExchangeRate { get; set; }
         public double Amount { get; set; }
         public double ExchangedAmount { get; set; }
-        public byte Status { get; set; }
+        public byte Status { get; set; } 
     }
 }

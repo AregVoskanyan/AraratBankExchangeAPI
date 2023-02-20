@@ -20,8 +20,10 @@ using System.Threading.Tasks;
 using TransactionExchange.Api.Data;
 using TransactionExchange.Api.Data.Entities;
 using TransactionExchange.Api.Enums;
+using TransactionExchange.Api.Middlewares;
 using TransactionExchange.Api.Services;
 using TransactionExchange.Api.Services.Interfaces;
+using static TransactionExchange.Api.Middlewares.RequestResponseLoggingMiddleware;
 
 namespace TransactionExchange.Api
 {
@@ -86,9 +88,34 @@ namespace TransactionExchange.Api
             services.AddSingleton<IRateService, RateService>();
 
             services.AddControllers();
+
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "TransactionExchange.Api", Version = "v1" });
+                c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+                {
+                    In = ParameterLocation.Header,
+                    Description = "Please insert the token",
+                    Name = "Authorization",
+                    Type = SecuritySchemeType.Http,
+                    BearerFormat = "Jwt",
+                    Scheme = "bearer"
+                });
+
+                c.AddSecurityRequirement(new OpenApiSecurityRequirement
+                {
+                    { 
+                        new OpenApiSecurityScheme
+                        {
+                            Reference = new OpenApiReference
+                            {
+                                Type = ReferenceType.SecurityScheme,
+                                Id = "Bearer"
+                            }
+                        },
+                        new string[]{}
+                    }
+                });
             });
         }
 
@@ -103,6 +130,12 @@ namespace TransactionExchange.Api
             }
 
             app.UseHttpsRedirection();
+
+            //Action<RequestProfilerModel> requestResponseHandler = requestProfilerModel =>
+            //{
+            //    LoggerUtility.WriteRequestLog(requestProfilerModel, DBConnections.AppLog);
+            //};
+            //app.UseMiddleware<RequestResponseLoggingMiddleware>(requestResponseHandler);
 
             app.UseRouting();
 

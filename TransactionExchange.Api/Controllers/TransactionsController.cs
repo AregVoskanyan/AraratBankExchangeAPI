@@ -1,6 +1,12 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
 using System.Threading.Tasks;
+using TransactionExchange.Api.Data;
+using TransactionExchange.Api.Data.Entities;
+using TransactionExchange.Api.DTOs;
+using TransactionExchange.Api.Services.Interfaces;
 
 namespace TransactionExchange.Api.Controllers
 {
@@ -8,22 +14,39 @@ namespace TransactionExchange.Api.Controllers
     [ApiController]
     public class TransactionsController : ControllerBase
     {
-        [HttpPost("Create")]
-        public async Task<IActionResult> CreateAsync()
+        private readonly ApplicationDataContext _context;
+        private readonly ITransactionService _transactionService;
+
+        public TransactionsController(ApplicationDataContext context, ITransactionService transactionService)
         {
-            return Ok("");
+            _context = context;
+            _transactionService = transactionService;
         }
 
-        [HttpGet("List")]
-        public async Task<IActionResult> GetListAsync()
+        [HttpPost("Create")]
+        public async Task<IActionResult> CreateAsync([FromBody]TransactionDto transactionDto)
         {
-            return Ok("");
+            await _transactionService.AddTransactionAsync(transactionDto);
+            return Ok("Transaction done!");
+        }
+
+        [HttpGet("AllHistory")]
+        public async Task<IActionResult> GetTransactionsHistoryAsync()
+        {
+            var history = await _transactionService.GetAllTransactionsAsync();
+            return Ok(history);
         }
 
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetListAsync(int id)
+        public async Task<IActionResult> GetHistoryByIdAsync(int id)
         {
-            return Ok("");
+            var transaction = await _transactionService.GetTransactionByIdAsync(id);
+            if(transaction == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(transaction);
         }
     }
 }

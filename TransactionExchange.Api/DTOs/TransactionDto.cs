@@ -1,10 +1,9 @@
 ﻿using System;
 
-namespace TransactionExchange.Api.Data.Entities
+namespace TransactionExchange.Api.DTOs
 {
-    public class Transaction
+    public class TransactionDto
     {
-        public Guid Id { get; set; }
         public DateTime CreatedDate { get; set; }
         public DateTime ConfirmedDate { get; set; }
         public string Currency { get; set; }

@@ -1,29 +1,21 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using TransactionExchange.Api.Data;
 using TransactionExchange.Api.Data.Entities;
 using TransactionExchange.Api.Enums;
 using TransactionExchange.Api.Middlewares;
 using TransactionExchange.Api.Services;
 using TransactionExchange.Api.Services.Interfaces;
-using static TransactionExchange.Api.Middlewares.RequestResponseLoggingMiddleware;
 
 namespace TransactionExchange.Api
 {
@@ -131,12 +123,6 @@ namespace TransactionExchange.Api
             }
 
             app.UseHttpsRedirection();
-
-            //Action<RequestProfilerModel> requestResponseHandler = requestProfilerModel =>
-            //{
-            //    LoggerUtility.WriteRequestLog(requestProfilerModel, DBConnections.AppLog);
-            //};
-            //app.UseMiddleware<RequestResponseLoggingMiddleware>(requestResponseHandler);
 
             app.UseRouting();
 

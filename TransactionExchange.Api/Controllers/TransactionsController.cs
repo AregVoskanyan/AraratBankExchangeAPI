@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using TransactionExchange.Api.Data;
@@ -27,7 +28,14 @@ namespace TransactionExchange.Api.Controllers
         public async Task<IActionResult> CreateAsync([FromBody]TransactionDto transactionDto)
         {
             await _transactionService.AddTransactionAsync(transactionDto);
-            return Ok("Transaction done!");
+            if (transactionDto.Status == Enums.TransactionStatus.Failed)
+            {
+                return BadRequest("Transaction failed!");
+            }
+            else
+            {
+                return Ok($"Transaction done!");
+            }
         }
 
         [HttpGet("AllHistory")]
@@ -38,7 +46,7 @@ namespace TransactionExchange.Api.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetHistoryByIdAsync(int id)
+        public async Task<IActionResult> GetHistoryByIdAsync(Guid id)
         {
             var transaction = await _transactionService.GetTransactionByIdAsync(id);
             if(transaction == null)

@@ -1,9 +1,6 @@
-﻿using AutoMapper;
-using Microsoft.EntityFrameworkCore;
-using NLog.Layouts;
+﻿using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
-using System.Data.Common;
-using System.Linq;
 using System.Threading.Tasks;
 using TransactionExchange.Api.Data;
 using TransactionExchange.Api.Data.Entities;
@@ -24,12 +21,6 @@ namespace TransactionExchange.Api.Services
         public async Task<Transaction> AddTransactionAsync(TransactionDto transactionDto)
         {
 
-            // call RateService and get the list of rates and currencies
-            // get the rate of AMD and user selected currency
-            // check if the previous rate is equal to current rate then calculate and save with confirmed status
-            // check if the previous rate is not equal to current rate then caluclate save with pending status and ask user to confirm
-
-
             var rates = await _rateService.GetAsync();
 
 
@@ -41,25 +32,35 @@ namespace TransactionExchange.Api.Services
 
             var rateAmd = rates.Rates["AMD"];
 
-
-
-
-            var transaction = new Transaction()
+                var transaction = new Transaction()
+                {
+                    CreatedDate = transactionDto.CreatedDate,
+                    Currency = transactionDto.Currency,
+                    CurrencyCode = CurrencyCode.CurrencyCodes[transactionDto.Currency],
+                    CurrencyName = CurrencyName.CurrencyNames[transactionDto.Currency],
+                    ExchangeRate = transactionDto.ExchangeRate,
+                    Amount = transactionDto.Amount,
+                    Status = transactionDto.Status,
+                    ExchangedAmount = CalculateAmount(transactionDto.Currency, rateAmd, transactionDto.ExchangeRate, transactionDto.Amount),
+                };
+            if(transactionDto.Currency != transactionDto.CurrencyName
+                || transactionDto.Currency != transactionDto.CurrencyCode
+                || transactionDto.CurrencyCode != transactionDto.CurrencyName)
             {
-                CreatedDate = transactionDto.CreatedDate,
-                ConfirmedDate = transactionDto.ConfirmedDate,
-                Currency = transactionDto.Currency,
-                CurrencyCode = Flan.CurrencyCodes[transactionDto.Currency],
-                CurrencyName = Flan.CurrencyNames[transactionDto.Currency] ,
-                ExchangeRate = transactionDto.ExchangeRate,
-                Amount = transactionDto.Amount,
-                ExchangedAmount = transactionDto.ExchangedAmount,
-                Status = transactionDto.Status
-            };
+                transactionDto.Status = Enums.TransactionStatus.Failed;
+                await _context.Transactions.AddAsync(transaction);
+                await _context.SaveChangesAsync();
+                return transaction;
+            }
+            else
+            {
+                transactionDto.Status = Enums.TransactionStatus.Successful;
+                await _context.Transactions.AddAsync(transaction);
+                await _context.SaveChangesAsync();
+                return transaction;
+            }
 
-            await _context.Transactions.AddAsync(transaction);
-            await _context.SaveChangesAsync();
-            return transaction;
+                
         }
 
         private double CalculateAmount(string currency, double rateAmd, double rateCurrency, double amount)
@@ -74,25 +75,10 @@ namespace TransactionExchange.Api.Services
             return transactionHistory;
         }
 
-        public async Task<Transaction> GetTransactionByIdAsync(int transactionId)
+        public async Task<Transaction> GetTransactionByIdAsync(Guid transactionId)
         {
             var transaction = await _context.Transactions.FindAsync(transactionId);
             return transaction;
         }
-    }
-
-    public static class Flan
-    {
-        public static Dictionary<string, string> CurrencyNames { get; set; } = new Dictionary<string, string>() {
-            {"AMD", "DRAM"}
-
-
-        };
-
-        public static Dictionary<string, string> CurrencyCodes { get; set; } = new Dictionary<string, string>() {
-            {"AMD", "041"}
-
-
-        };
     }
 }

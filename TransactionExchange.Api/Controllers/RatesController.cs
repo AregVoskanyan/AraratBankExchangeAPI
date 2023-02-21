@@ -11,7 +11,7 @@ namespace TransactionExchange.Api.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize(Roles = UserRoles.Admin)]
+    //[Authorize(Roles = UserRoles.Admin)]
     public class RatesController : ControllerBase
     {
         private readonly IRateService _rateService;

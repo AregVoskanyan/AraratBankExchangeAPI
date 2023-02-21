@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using TransactionExchange.Api.Data.Entities;
 using TransactionExchange.Api.DTOs;
@@ -9,6 +10,6 @@ namespace TransactionExchange.Api.Services.Interfaces
     {
         Task<Transaction> AddTransactionAsync(TransactionDto transactionDto);
         Task<List<Transaction>> GetAllTransactionsAsync();
-        Task<Transaction> GetTransactionByIdAsync(int transactionId);
+        Task<Transaction> GetTransactionByIdAsync(Guid transactionId);
     }
 }

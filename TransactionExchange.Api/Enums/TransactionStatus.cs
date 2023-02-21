@@ -1,10 +1,10 @@
-﻿namespace TransactionExchange.Api.Enums
+﻿using System;
+
+namespace TransactionExchange.Api.Enums
 {
-    public enum TransactionStatus : byte
+    public enum TransactionStatus
     {
-        Created, 
-        Confirmed,
-        ApprovementRequired,
+        Successful,
         Failed
     }    
 }

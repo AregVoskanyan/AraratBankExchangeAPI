@@ -1,11 +1,8 @@
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
+using Serilog;
+using Serilog.Events;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace TransactionExchange.Api
 {
@@ -13,11 +10,32 @@ namespace TransactionExchange.Api
     {
         public static void Main(string[] args)
         {
-            CreateHostBuilder(args).Build().Run();
+            Log.Logger = new LoggerConfiguration()
+                .MinimumLevel.Debug()
+                .MinimumLevel.Override("Microsoft", LogEventLevel.Information)
+                .Enrich.FromLogContext()
+                .WriteTo.File("C:\\Users\\User\\source\\repos\\CSharp\\ExchangeAPI\\TransactionExchange.Api\\Logging\\Logs")
+                .WriteTo.Seq("https://localhost:5001")
+                .CreateLogger();
+
+            try
+            {
+                Log.Information("Starting host");
+                CreateHostBuilder(args).Build().Run();
+            }
+            catch(Exception ex)
+            {
+                Log.Fatal(ex, "Host terminated unexpectedely");
+            }
+            finally
+            {
+                Log.CloseAndFlush();
+            }
         }
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
+            .UseSerilog()
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder.UseStartup<Startup>();

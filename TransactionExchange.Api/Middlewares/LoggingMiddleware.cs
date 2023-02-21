@@ -9,27 +9,26 @@ namespace TransactionExchange.Api.Middlewares
         private readonly RequestDelegate _next;
         private readonly ILogger _logger;
 
-        public LoggingMiddleware(RequestDelegate next, ILogger logger)
+        public LoggingMiddleware(RequestDelegate next, ILoggerFactory _loggerFactory )
         {
             _next = next;
-            _logger = logger;
+            _logger = _loggerFactory.CreateLogger("LoggingMiddleware");
         }
 
         public async Task Invoke(HttpContext context)
         {
-
-            try
-            {
-                await _next(context);
-            }
-            finally
-            {
-                _logger.LogInformation(
-                    "Request{method}{url} => {statusCode}",
-                    context.Request?.Method,
-                    context.Request.Path.Value,
-                    context.Response.StatusCode);
-            }
+                try
+                {
+                    await _next(context);
+                }
+                finally
+                {
+                    _logger.LogInformation(
+                        "Request{method}{url} => {statusCode}",
+                        context.Request?.Method,
+                        context.Request.Path.Value,
+                        context.Response.StatusCode);
+                }
         }
     }
 }

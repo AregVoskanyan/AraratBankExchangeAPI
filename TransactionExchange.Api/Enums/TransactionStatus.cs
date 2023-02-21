@@ -2,9 +2,9 @@
 
 namespace TransactionExchange.Api.Enums
 {
-    public enum TransactionStatus
+    public enum TransactionStatus : byte
     {
-        Successful,
-        Failed
+        Successful = 1,
+        Failed = 2
     }    
 }

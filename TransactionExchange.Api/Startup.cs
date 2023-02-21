@@ -124,6 +124,8 @@ namespace TransactionExchange.Api
 
             app.UseHttpsRedirection();
 
+            app.UseMiddleware<LoggingMiddleware>();
+
             app.UseRouting();
 
             app.UseAuthentication();

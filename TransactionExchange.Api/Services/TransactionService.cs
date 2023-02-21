@@ -40,7 +40,6 @@ namespace TransactionExchange.Api.Services
                     CurrencyName = CurrencyName.CurrencyNames[transactionDto.Currency],
                     ExchangeRate = transactionDto.ExchangeRate,
                     Amount = transactionDto.Amount,
-                    Status = transactionDto.Status,
                     ExchangedAmount = CalculateAmount(transactionDto.Currency, rateAmd, transactionDto.ExchangeRate, transactionDto.Amount),
                 };
             if(transactionDto.Currency != transactionDto.CurrencyName
@@ -48,6 +47,7 @@ namespace TransactionExchange.Api.Services
                 || transactionDto.CurrencyCode != transactionDto.CurrencyName)
             {
                 transactionDto.Status = Enums.TransactionStatus.Failed;
+                transaction.Status = Enums.TransactionStatus.Failed;
                 await _context.Transactions.AddAsync(transaction);
                 await _context.SaveChangesAsync();
                 return transaction;
@@ -55,12 +55,11 @@ namespace TransactionExchange.Api.Services
             else
             {
                 transactionDto.Status = Enums.TransactionStatus.Successful;
+                transaction.Status = Enums.TransactionStatus.Successful;
                 await _context.Transactions.AddAsync(transaction);
                 await _context.SaveChangesAsync();
                 return transaction;
-            }
-
-                
+            }                
         }
 
         private double CalculateAmount(string currency, double rateAmd, double rateCurrency, double amount)

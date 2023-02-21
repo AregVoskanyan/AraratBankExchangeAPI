@@ -1,18 +1,22 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Threading.Tasks;
 using TransactionExchange.Api.Data;
 using TransactionExchange.Api.Data.Entities;
 using TransactionExchange.Api.DTOs;
+using TransactionExchange.Api.Helpers;
 using TransactionExchange.Api.Services.Interfaces;
 
 namespace TransactionExchange.Api.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize(Roles = UserRoles.Admin)]
     public class TransactionsController : ControllerBase
     {
         private readonly ApplicationDataContext _context;
